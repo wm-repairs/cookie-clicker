@@ -1,0 +1,137 @@
+from pathlib import Path
+
+html = r'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11101d">
+<title>Cookie Cosmos — Idle Empire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Nunito:wght@400;600;700;800;900&display=swap');
+:root{--bg:#11101d;--panel:#1c1a2b;--panel2:#252239;--line:#393550;--gold:#ffcb65;--pink:#ff7cba;--mint:#72e6c0;--text:#f8f2ff;--muted:#aaa4bd;--shadow:0 16px 45px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#41315f 0,#171426 48%,#0d0c16 100%);color:var(--text);font-family:Nunito,system-ui,sans-serif;min-height:100vh}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+header{height:72px;padding:0 clamp(14px,3vw,42px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff13;background:#100f1bd9;position:sticky;top:0;z-index:10;backdrop-filter:blur(16px)}
+.brand{font-size:20px;font-weight:900;letter-spacing:.4px}.brand span{color:var(--gold)}.topright{display:flex;gap:10px;align-items:center}.topbtn{background:#ffffff0b;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800}
+main{max-width:1440px;margin:auto;padding:24px clamp(12px,2.5vw,36px) 60px}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-bottom:18px}
+.panel{background:linear-gradient(145deg,#242137ed,#191727f2);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}
+.stats{padding:22px 24px;display:flex;flex-direction:column;justify-content:center;min-height:155px}.eyebrow{color:var(--muted);text-transform:uppercase;letter-spacing:2px;font:11px 'DM Mono',monospace}.bigcount{font-size:clamp(32px,5vw,54px);font-weight:900;letter-spacing:-2px;line-height:1.1;margin:7px 0}.gold{color:var(--gold)}.substats{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:13px}.substats b{color:var(--text)}
+.progress-wrap{height:7px;background:#ffffff12;border-radius:99px;overflow:hidden;margin-top:15px}.progress{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .25s}
+.clicker{min-height:155px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 50%,#4c3457,#211d34 65%,#191727)}
+.cookie-button{width:130px;height:130px;border:0;border-radius:50%;font-size:78px;background:radial-gradient(circle at 35% 28%,#ffe9a8,#e99a40 65%,#a94d27);box-shadow:0 9px 0 #8d482d,0 15px 30px #0008,inset 0 4px 8px #fff8;transition:transform .08s;filter:drop-shadow(0 0 22px #ffb84c55);user-select:none}.cookie-button:hover{transform:scale(1.045) rotate(-3deg)}.cookie-button:active{transform:scale(.92) rotate(5deg);box-shadow:0 3px 0 #8d482d,0 7px 15px #0008}.clickhint{position:absolute;bottom:10px;color:#cfc3df;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:18px;align-items:start}.leftcol,.rightcol{display:grid;gap:18px}.section{padding:18px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.sectionhead h2{font-size:17px;margin:0;font-weight:900}.pill{font:10px 'DM Mono',monospace;color:var(--mint);border:1px solid #72e6c044;padding:5px 8px;border-radius:99px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px}.tab{background:#ffffff08;border:1px solid transparent;border-radius:9px;padding:7px 11px;font-size:12px;font-weight:800;color:var(--muted)}.tab.active{background:#ffcb6518;border-color:#ffcb6555;color:var(--gold)}
+.shoplist{display:grid;gap:8px;max-height:610px;overflow:auto;padding-right:3px}.shopitem{display:grid;grid-template-columns:48px 1fr auto;gap:11px;align-items:center;padding:11px;background:#ffffff07;border:1px solid #ffffff0c;border-radius:13px;transition:.15s}.shopitem.afford{border-color:#72e6c04d;background:#72e6c008}.shopitem:hover{transform:translateY(-1px);background:#ffffff0d}.itemicon{width:46px;height:46px;border-radius:12px;background:#ffffff0c;display:grid;place-items:center;font-size:25px}.itemname{font-weight:900;font-size:13px}.itemdesc{color:var(--muted);font-size:11px;line-height:1.35;margin-top:2px}.itemmeta{color:var(--mint);font:10px 'DM Mono',monospace;margin-top:5px}.buy{border:1px solid #ffcb6555;background:#ffcb6519;color:var(--gold);border-radius:9px;padding:8px 10px;min-width:92px;text-align:right;font:11px 'DM Mono',monospace}.buy:disabled{opacity:.36;cursor:not-allowed}.owned{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.upgradegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:420px;overflow:auto}.upgrade{border:1px solid #ffffff12;background:#ffffff07;border-radius:12px;padding:11px;text-align:left;min-height:92px}.upgrade.available{border-color:#ff7cba77;background:#ff7cba0d}.upgrade:disabled{opacity:.4;cursor:not-allowed}.upgrade strong{display:block;font-size:12px}.upgrade small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin:4px 0}.upgrade em{font:10px 'DM Mono',monospace;color:var(--pink);font-style:normal}
+.achievements{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.achievement{background:#ffffff07;border:1px solid #ffffff0c;border-radius:10px;padding:9px;text-align:center;opacity:.38;filter:grayscale(1)}.achievement.done{opacity:1;filter:none;border-color:#ffcb6555}.achievement div{font-size:21px}.achievement b{display:block;font-size:10px;margin-top:4px}.achievement small{color:var(--muted);font-size:9px}
+.log{height:115px;overflow:auto;font:11px 'DM Mono',monospace;color:var(--muted);line-height:1.7}.log div:first-child{color:var(--mint)}
+.footer-note{text-align:center;color:#716b83;font-size:11px;margin-top:22px}
+.float{position:absolute;pointer-events:none;font-weight:900;color:#fff4c6;text-shadow:0 2px 8px #000;animation:floatup .8s ease-out forwards;z-index:4}.particle{position:absolute;pointer-events:none;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:particle .65s ease-out forwards}.sparkle{position:absolute;pointer-events:none;animation:spark .65s ease-out forwards}
+@keyframes floatup{to{transform:translateY(-75px) scale(1.2);opacity:0}}@keyframes particle{to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}@keyframes spark{to{transform:translateY(-35px) rotate(90deg) scale(0);opacity:0}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#2d2942;border:1px solid #ffcb6577;border-radius:12px;padding:11px 16px;box-shadow:var(--shadow);z-index:30;font-size:13px;font-weight:800;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.clicker{min-height:180px}.shoplist{max-height:500px}}
+@media(max-width:480px){header{height:60px}.brand{font-size:16px}.topbtn{padding:7px 8px}.stats{min-height:130px}.cookie-button{width:115px;height:115px;font-size:68px}.section{padding:13px}.upgradegrid{grid-template-columns:1fr 1fr}.achievements{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="brand">🍪 COOKIE <span>COSMOS</span></div><div class="topright"><button class="topbtn" id="soundBtn">🔊 Sound: On</button><button class="topbtn" id="saveBtn">💾 Save</button><button class="topbtn" id="resetBtn">↻ Reset</button></div></header>
+<main>
+<div class="hero">
+ <section class="panel stats"><div class="eyebrow">Your delicious empire</div><div class="bigcount"><span id="cookies">0</span> <span class="gold">cookies</span></div><div class="substats"><span>🍪 <b id="cps">0</b> per second</span><span>👆 <b id="clickPower">1</b> per click</span><span>🏭 <b id="totalMade">0</b> baked all-time</span></div><div class="progress-wrap"><div class="progress" id="milestone"></div></div></section>
+ <section class="panel clicker" id="clickArea"><button class="cookie-button" id="cookie" aria-label="Bake a cookie">🍪</button><div class="clickhint">Click the cookie to bake</div></section>
+</div>
+<div class="layout">
+ <div class="leftcol">
+  <section class="panel section"><div class="sectionhead"><h2>🏭 Your bakery</h2><span class="pill" id="buildingCount">0 buildings</span></div><div class="shoplist" id="buildings"></div></section>
+  <section class="panel section"><div class="sectionhead"><h2>✨ Research & upgrades</h2><span class="pill" id="upgradeCount">0 unlocked</span></div><div class="upgradegrid" id="upgrades"></div></section>
+ </div>
+ <div class="rightcol">
+  <section class="panel section"><div class="sectionhead"><h2>🏆 Achievements</h2><span class="pill" id="achievementCount">0 / 0</span></div><div class="achievements" id="achievements"></div></section>
+  <section class="panel section"><div class="sectionhead"><h2>🌌 Cosmic prestige</h2><span class="pill">Endgame</span></div><p style="color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 12px">Ascend to reset your bakery and earn <b class="gold">Cosmic Chips</b>. Each chip permanently boosts all cookie production by 10%.</p><div style="font-size:13px;margin-bottom:10px">Available chips: <b class="gold" id="chips">0</b> · Production boost: <b id="boost">0%</b></div><button class="topbtn" style="width:100%;padding:11px;color:var(--gold)" id="ascendBtn">✨ Ascend — requires 1 million cookies</button></section>
+  <section class="panel section"><div class="sectionhead"><h2>📜 Bakery log</h2><span class="pill">Live</span></div><div class="log" id="log"><div>Welcome to Cookie Cosmos. Your empire awaits...</div></div></section>
+ </div>
+</div>
+<div class="footer-note">Your progress saves automatically in this browser · Cookie Cosmos v1.0</div>
+</main><div class="toast" id="toast"></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const fmt=n=>{if(!isFinite(n))return '∞';if(n<1000)return Math.floor(n).toLocaleString();const units=['K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];let i=-1;while(n>=1000&&i<units.length-1){n/=1000;i++}return n.toFixed(n>=100?0:n>=10?1:2)+units[i]};
+const buildings=[
+['cursor','👆','Cursor','A tiny helper clicks for you.',15,0.1],
+['grandma','👵','Grandma','Bakes cookies with love.',100,1],
+['farm','🌱','Cookie Farm','Grows cookie plants.',1100,8],
+['mine','⛏️','Cookie Mine','Digs up cookie dough.',12000,47],
+['factory','🏭','Cookie Factory','Mass-produces deliciousness.',130000,260],
+['bank','🏦','Cookie Bank','Makes interest in cookies.',1400000,1400],
+['temple','🛕','Cookie Temple','Prays for more cookies.',20000000,7800],
+['wizard','🧙','Wizard Tower','Conjures fresh batches.',330000000,44000],
+['shipment','🚀','Cookie Shipment','Imports cookies from space.',5100000000,260000],
+['alchemy','⚗️','Alchemy Lab','Turns gold into cookies.',75000000000,1600000],
+['portal','🌀','Cookie Portal','Opens a cookie dimension.',1000000000000,10000000],
+['time','⌛','Time Machine','Bakes cookies yesterday.',14000000000000,65000000],
+['antimatter','⚛️','Antimatter Condenser','Condenses the universe.',170000000000000,430000000],
+['prism','💎','Prism','Converts light into cookies.',2.1e15,2.9e9],
+['chance','🎲','Lucky Factory','Makes probability delicious.',2.6e16,21e9],
+['engine','🪐','Cookie Engine','Powers a cookie star system.',3.1e17,150e9],
+['galaxy','🌌','Galaxy Bakery','Bakes across galaxies.',4e18,1.1e12],
+['dimension','🪞','Dimension Oven','Bakes in parallel realities.',5e19,8e12],
+['singularity','🕳️','Singularity','An infinitely dense cookie.',7e20,65e12],
+['creator','👑','The Creator','Creates cookies from nothing.',1e22,520e12]
+];
+const state={cookies:0,total:0,clicks:0,owned:{},bought:[],chips:0,upgrades:[],achievements:[],last:Date.now(),sound:true};
+buildings.forEach(b=>state.owned[b[0]]=0);
+const upgradeDefs=[];
+buildings.forEach((b,i)=>{for(let t=1;t<=10;t++){upgradeDefs.push({id:b[0]+'_'+t,name:['Better '+b[2],'Efficient '+b[2],'Turbo '+b[2],'Quantum '+b[2],'Golden '+b[2],'Cosmic '+b[2],'Infinite '+b[2],'Transcendent '+b[2],'Divine '+b[2],'Ultimate '+b[2]][t-1],desc:'Doubles '+b[2].toLowerCase()+' production. A little improvement with a huge impact.',cost:b[4]*Math.pow(2.5,t+1),type:b[0],mult:2,need:t===1?1:(t-1)*5,icon:['⚙️','🔧','⚡','🧬','🌟'][t%5]})}});
+const achievements=[
+['first','🍪','First batch','Bake your first cookie',()=>state.total>=1],
+['hundred','💯','Getting started','Bake 100 cookies',()=>state.total>=100],
+['thousand','🥉','Cookie rookie','Bake 1,000 cookies',()=>state.total>=1000],
+['million','🥈','Cookie millionaire','Bake 1 million cookies',()=>state.total>=1e6],
+['billion','🥇','Billionaire','Bake 1 billion cookies',()=>state.total>=1e9],
+['trillion','💠','Cookie tycoon','Bake 1 trillion cookies',()=>state.total>=1e12],
+['click100','👆','Click happy','Click 100 times',()=>state.clicks>=100],
+['click1000','🖱️','Click legend','Click 1,000 times',()=>state.clicks>=1000],
+['grandma','👵','Family business','Own 10 grandmas',()=>state.owned.grandma>=10],
+['farm','🌱','Green thumb','Own 10 farms',()=>state.owned.farm>=10],
+['factory','🏭','Industrialist','Own 10 factories',()=>state.owned.factory>=10],
+['all','🌌','Cosmic collection','Own at least one of every building',()=>buildings.every(b=>state.owned[b[0]]>=1)],
+['upgrade','✨','Researcher','Buy 10 upgrades',()=>state.upgrades.length>=10],
+['upgrade50','🧪','Mad scientist','Buy 50 upgrades',()=>state.upgrades.length>=50],
+['ascend','🚀','New beginnings','Ascend for the first time',()=>state.chips>0],
+['hundredBuildings','🏗️','Property empire','Own 100 buildings total',()=>Object.values(state.owned).reduce((a,b)=>a+b,0)>=100],
+['millionClicks','💥','Finger of destiny','Click 10,000 times',()=>state.clicks>=10000],
+['rich','💰','Loaded','Hold 1 quadrillion cookies',()=>state.cookies>=1e15],
+['speed','⚡','Cookie velocity','Reach 1 million cookies per second',()=>getCps()>=1e6],
+['collector','📚','Upgrade collector','Buy 100 upgrades',()=>state.upgrades.length>=100]
+];
+function getCps(){let base=buildings.reduce((s,b)=>s+state.owned[b[0]]*b[5],0);let mult=1+state.chips*.1;state.upgrades.forEach(id=>{let u=upgradeDefs.find(x=>x.id===id);if(u)mult*=u.mult});return base*mult}
+function clickValue(){return 1+Math.floor(getCps()*.04)+state.chips}
+function price(b){return Math.ceil(b[4]*Math.pow(1.15,state.owned[b[0]]))}
+function log(msg){const el=$('log'),d=document.createElement('div');d.textContent='› '+msg;el.prepend(d);while(el.children.length>30)el.lastChild.remove()}
+let toastTimer;function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),1900)}
+function sound(freq=500){if(!state.sound)return;try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=freq;o.type='sine';g.gain.setValueAtTime(.045,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.09);o.start();o.stop(c.currentTime+.1);o.onended=()=>c.close()}catch(e){}}
+function burst(x,y,big=false){const area=$('clickArea'),r=area.getBoundingClientRect();for(let i=0;i<(big?24:9);i++){let p=document.createElement('i');p.className='particle';let a=Math.random()*Math.PI*2,d=25+Math.random()*(big?110:65);p.style.left=(x-r.left)+'px';p.style.top=(y-r.top)+'px';p.style.setProperty('--x',Math.cos(a)*d+'px');p.style.setProperty('--y',Math.sin(a)*d+'px');p.style.width=p.style.height=(3+Math.random()*6)+'px';area.append(p);setTimeout(()=>p.remove(),700)}}
+function floating(x,y,amount){const area=$('clickArea'),r=area.getBoundingClientRect(),e=document.createElement('div');e.className='float';e.textContent='+'+fmt(amount);e.style.left=(x-r.left)+'px';e.style.top=(y-r.top)+'px';area.append(e);setTimeout(()=>e.remove(),850)}
+$('cookie').addEventListener('click',e=>{let v=clickValue();state.cookies+=v;state.total+=v;state.clicks++;floating(e.clientX,e.clientY,v);burst(e.clientX,e.clientY);sound(420+Math.random()*260);render();checkAchievements()});
+function buyBuilding(id){let b=buildings.find(x=>x[0]===id),c=price(b);if(state.cookies<c)return;state.cookies-=c;state.owned[id]++;log('Bought '+b[2]+' #'+state.owned[id]);sound(650);render();checkAchievements()}
+function buyUpgrade(id){let u=upgradeDefs.find(x=>x.id===id);if(!u||state.upgrades.includes(id)||state.owned[u.type]<u.need||state.cookies<u.cost)return;state.cookies-=u.cost;state.upgrades.push(id);log('Upgrade unlocked: '+u.name);toast('✨ '+u.name+' unlocked!');sound(850);render();checkAchievements()}
+function renderBuildings(){const el=$('buildings');el.innerHTML='';buildings.forEach(b=>{let c=price(b),owned=state.owned[b[0]],d=document.createElement('div');d.className='shopitem'+(state.cookies>=c?' afford':'');d.innerHTML=`<div class="itemicon">${b[1]}</div><div><div class="itemname">${b[2]}</div><div class="itemdesc">${b[3]}</div><div class="itemmeta">+${fmt(b[5]*(1+state.chips*.1))} cookies / sec each</div></div><button class="buy" ${state.cookies<c?'disabled':''}>${fmt(c)}<span class="owned">Owned: ${owned}</span></button>`;d.querySelector('button').onclick=()=>buyBuilding(b[0]);el.append(d)});$('buildingCount').textContent=Object.values(state.owned).reduce((a,b)=>a+b,0)+' buildings'}
+function renderUpgrades(){const el=$('upgrades');el.innerHTML='';let available=upgradeDefs.filter(u=>!state.upgrades.includes(u.id)&&state.owned[u.type]>=u.need);let shown=available.slice(0,120);shown.forEach(u=>{let can=state.cookies>=u.cost,d=document.createElement('button');d.className='upgrade'+(can?' available':'');d.disabled=!can;d.innerHTML=`<strong>${u.icon} ${u.name}</strong><small>${u.desc}</small><em>${fmt(u.cost)} cookies</em>`;d.onclick=()=>buyUpgrade(u.id);el.append(d)});$('upgradeCount').textContent=state.upgrades.length+' bought · '+available.length+' available';if(!shown.length){el.innerHTML='<div style="color:var(--muted);font-size:12px;grid-column:1/-1;padding:15px">Buy more buildings to unlock research. There are 200 upgrades waiting to be discovered.</div>'}}
+function renderAchievements(){let el=$('achievements');el.innerHTML='';achievements.forEach(a=>{let done=state.achievements.includes(a[0]);let d=document.createElement('div');d.className='achievement'+(done?' done':'');d.innerHTML=`<div>${a[1]}</div><b>${a[2]}</b><small>${a[3]}</small>`;el.append(d)});$('achievementCount').textContent=state.achievements.length+' / '+achievements.length}
+function checkAchievements(){achievements.forEach(a=>{if(!state.achievements.includes(a[0])&&a[4]()){state.achievements.push(a[0]);toast('🏆 Achievement: '+a[2]);log('Achievement unlocked: '+a[2]);sound(1000)}})}
+function render(){ $('cookies').textContent=fmt(state.cookies);$('cps').textContent=fmt(getCps());$('clickPower').textContent=fmt(clickValue());$('totalMade').textContent=fmt(state.total);$('chips').textContent=state.chips;$('boost').textContent=Math.round(state.chips*10)+'%';let pct=Math.min(100,state.cookies/1e6*100);$('milestone').style.width=pct+'%';$('ascendBtn').disabled=state.cookies<1e6;renderBuildings();renderUpgrades();renderAchievements()}
+function save(){state.last=Date.now();localStorage.setItem('cookieCosmosSave',JSON.stringify(state))}
+function load(){try{let s=JSON.parse(localStorage.getItem('cookieCosmosSave'));if(s){Object.assign(state,s);buildings.forEach(b=>state.owned[b[0]]=state.owned[b[0]]||0);let away=Math.min(8*3600,Math.max(0,(Date.now()-(s.last||Date.now()))/1000));let earned=getCps()*away*.5;if(earned>0){state.cookies+=earned;state.total+=earned;log('Welcome back! Your bakery made '+fmt(earned)+' cookies while away.')}}}catch(e){log('A fresh bakery has been started.')}}
+$('saveBtn').onclick=()=>{save();toast('💾 Game saved!');sound(700)};
+$('soundBtn').onclick=()=>{state.sound=!state.sound;$('soundBtn').textContent=state.sound?'🔊 Sound: On':'🔇 Sound: Off';sound(500)};
+$('resetBtn').onclick=()=>{if(confirm('Reset all progress? This cannot be undone.')){localStorage.removeItem('cookieCosmosSave');location.reload()}};
+$('ascendBtn').onclick=()=>{if(state.cookies<1e6)return;let gained=Math.max(1,Math.floor(Math.sqrt(state.total/1e6)));if(!confirm('Ascend and gain '+gained+' Cosmic Chips? Your cookies, buildings and upgrades will reset.'))return;state.chips+=gained;state.cookies=0;state.total=0;state.clicks=0;state.owned={};buildings.forEach(b=>state.owned[b[0]]=0);state.upgrades=[];state.achievements=state.achievements.filter(x=>x==='ascend');log('You ascended with '+gained+' Cosmic Chips. A new universe begins!');toast('🌌 Ascension complete!');render();checkAchievements();save()};
+load();render();checkAchievements();
+let last=Date.now(),tick=0;setInterval(()=>{let now=Date.now(),dt=Math.min(2,(now-last)/1000);last=now;let gain=getCps()*dt;if(gain>0){state.cookies+=gain;state.total+=gain}tick++;if(tick%4===0){render();checkAchievements()}if(tick%20===0)save()},250);
+window.addEventListener('beforeunload',save);
+})();
+</script>
+</body></html>'''
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created {path} ({len(html):,} characters)")
